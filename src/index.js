@@ -1,31 +1,11 @@
 const { GraphQLServer } = require('graphql-yoga')
-const People = './../database/database';
+const Query = require('./../resolvers/Query');
+const Mutation = require('./../resolvers/Mutation');
 
+//Resolvers
 const resolvers = {
-    Query: {
-        Greeting: () => `Hello World`,
-        People: () => People.find({}),
-    },
-    Mutation: {
-        createPerson: async (parent, args) =>{
-            const newPerson = new People({
-                first: args.first,
-                last: args.last
-            })
-            const error = await newPerson.save()
-    
-            if(error) return error 
-            return newPerson
-        },
-        deletePerson: (parent, args) => {
-            return new Promise( (resolve, reject) => {
-                People.findOneAndDelete(args.id, function(err, result){
-                    if (err) return err;
-                    resolve(result)
-                })
-            })
-        }
-    }
+    Query,
+    Mutation
   }
 
 const server = new GraphQLServer({
