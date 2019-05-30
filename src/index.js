@@ -1,43 +1,36 @@
 const { GraphQLServer } = require('graphql-yoga')
+const People = './../database/database';
 
-// 1
-const typeDefs = `
-type Query {
-    info: String!
-    feed: [Link!]!
-  }
-  
-  type Link {
-    id: ID!
-    description: String!
-    url: String!
-  }
-`
-
-// 1
-let links = [{
-    id: 'link-0',
-    url: 'www.howtographql.com',
-    description: 'Fullstack tutorial for GraphQL'
-  }]
-  
-  const resolvers = {
+const resolvers = {
     Query: {
-      info: () => `This is the API of a Hackernews Clone`,
-      // 2
-      feed: () => links,
+        Greeting: () => `Hello World`,
+        People: () => People.find({}),
     },
-    // 3
-    Link: {
-      id: (parent) => parent.id,
-      description: (parent) => parent.description,
-      url: (parent) => parent.url,
+    Mutation: {
+        createPerson: async (parent, args) =>{
+            const newPerson = new People({
+                first: args.first,
+                last: args.last
+            })
+            const error = await newPerson.save()
+    
+            if(error) return error 
+            return newPerson
+        },
+        deletePerson: (parent, args) => {
+            return new Promise( (resolve, reject) => {
+                People.findOneAndDelete(args.id, function(err, result){
+                    if (err) return err;
+                    resolve(result)
+                })
+            })
+        }
     }
   }
 
-// 3
 const server = new GraphQLServer({
-  typeDefs,
-  resolvers,
+  typeDefs: './src/schema.graphql',
+  resolvers
 })
-server.start(() => console.log(`Server is running on http://localhost:4000`))
+
+server.start({port: 7777}, () => console.log(`The server is running on port 7777`))
