@@ -9,5 +9,6 @@ type PeopleObject {
     }
 type Mutation {
         createPerson(first: String!, last: String!): PeopleObject
+        updatePerson(id: ID!, first: String!, last: String!): PeopleObject
         deletePerson(id: ID!): PeopleObject
 }
